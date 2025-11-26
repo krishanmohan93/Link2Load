@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { detectPlatform } from "@/lib/platform-detector";
+import { UnifiedScraper } from "@/lib/scrapers/unified-scraper";
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
-const RATE_LIMIT = 20; // requests per minute
+const RATE_LIMIT = 30; // requests per minute
 const WINDOW_MS = 60 * 1000;
 
 function checkRateLimit(ip: string): boolean {
@@ -24,25 +24,9 @@ function checkRateLimit(ip: string): boolean {
     return true;
 }
 
-interface ScraperResponse {
-    success: boolean;
-    platform: string;
-    title: string;
-    description: string;
-    thumbnail: string;
-    duration: string;
-    author: string;
-    views: string;
-    formats: {
-        quality: string;
-        format: string;
-        size: string;
-        type: 'video' | 'audio';
-        downloadUrl: string;
-    }[];
-}
-
 export async function POST(req: NextRequest) {
+    const startTime = Date.now();
+
     try {
         // Rate Limiting
         const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
@@ -73,108 +57,61 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const platform = detectPlatform(url);
+        console.log(`[Scrape] Processing: ${url}`);
 
-        if (platform === 'unknown') {
-            return NextResponse.json(
-                { error: "Unsupported platform. Please use YouTube, Instagram, TikTok, Facebook, Twitter/X, Pinterest, Reddit, or LinkedIn." },
-                { status: 400 }
-            );
-        }
-
-        // Use SuperFast Scraper API
-        const scraperApiUrl = 'https://api.superfastscraper.com/scrape';
+        // Use unified scraper with automatic fallback
+        const scraper = new UnifiedScraper();
 
         try {
-            const response = await fetch(scraperApiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                },
-                body: JSON.stringify({ url }),
+            const result = await scraper.scrape(url);
+
+            const processingTime = Date.now() - startTime;
+            console.log(`[Scrape] Success in ${processingTime}ms`);
+
+            return NextResponse.json({
+                ...result,
+                success: true,
+                processingTime: `${processingTime}ms`,
             });
 
-            if (!response.ok) {
-                throw new Error(`Scraper API returned ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            // Transform the response to our format
-            const result: ScraperResponse = {
-                success: true,
-                platform: platform.charAt(0).toUpperCase() + platform.slice(1),
-                title: data.title || "Video Title",
-                description: data.description || "",
-                thumbnail: data.thumbnail || data.image || "https://via.placeholder.com/640x360",
-                duration: data.duration || "0:00",
-                author: data.author || data.uploader || "Unknown",
-                views: data.views ? formatViews(data.views) : "0 views",
-                formats: []
-            };
-
-            // Process video formats
-            if (data.formats && Array.isArray(data.formats)) {
-                result.formats = data.formats.map((format: any) => ({
-                    quality: format.quality || format.resolution || "HD",
-                    format: format.ext || format.format || "mp4",
-                    size: format.filesize ? formatFileSize(format.filesize) : "Unknown",
-                    type: format.vcodec === 'none' ? 'audio' : 'video',
-                    downloadUrl: format.url || format.download_url || ""
-                })).filter((f: any) => f.downloadUrl);
-            } else if (data.video_url || data.download_url) {
-                // Single video URL
-                result.formats.push({
-                    quality: data.quality || "HD",
-                    format: "mp4",
-                    size: data.filesize ? formatFileSize(data.filesize) : "Unknown",
-                    type: "video",
-                    downloadUrl: data.video_url || data.download_url
-                });
-            }
-
-            // If no formats found, add common quality options pointing to the best available
-            if (result.formats.length === 0) {
-                const bestUrl = data.url || data.video_url || data.download_url;
-                if (bestUrl) {
-                    result.formats = [
-                        { quality: "HD (1080p)", format: "MP4", size: "Unknown", type: "video", downloadUrl: bestUrl },
-                        { quality: "SD (720p)", format: "MP4", size: "Unknown", type: "video", downloadUrl: bestUrl },
-                        { quality: "SD (480p)", format: "MP4", size: "Unknown", type: "video", downloadUrl: bestUrl }
-                    ];
-                }
-            }
-
-            return NextResponse.json(result);
-
         } catch (scraperError: any) {
-            console.error("Scraper API Error:", scraperError);
+            console.error("[Scrape] Primary scraper failed:", scraperError);
 
-            // Fallback to mock data for demo purposes
-            const mockResult: ScraperResponse = {
-                success: true,
-                platform: platform.charAt(0).toUpperCase() + platform.slice(1),
-                title: "Sample Video - " + platform.toUpperCase(),
-                description: "This is a demo video. The scraper API may be unavailable or the video may be private/restricted.",
-                thumbnail: `https://via.placeholder.com/640x360/8B5CF6/FFFFFF?text=${platform.toUpperCase()}`,
-                duration: "5:42",
-                author: "Demo Channel",
-                views: "1.2M views",
-                formats: [
-                    { quality: "4K (2160p)", format: "MP4", size: "850 MB", type: "video", downloadUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" },
-                    { quality: "Full HD (1080p)", format: "MP4", size: "250 MB", type: "video", downloadUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" },
-                    { quality: "HD (720p)", format: "MP4", size: "120 MB", type: "video", downloadUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" },
-                    { quality: "SD (480p)", format: "MP4", size: "65 MB", type: "video", downloadUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" },
-                    { quality: "High Quality", format: "MP3", size: "8 MB", type: "audio", downloadUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" }
-                ]
-            };
+            // Final fallback: Try external API service
+            try {
+                const fallbackResult = await fallbackToExternalService(url);
 
-            return NextResponse.json(mockResult);
+                const processingTime = Date.now() - startTime;
+                console.log(`[Scrape] Fallback success in ${processingTime}ms`);
+
+                return NextResponse.json({
+                    ...fallbackResult,
+                    success: true,
+                    processingTime: `${processingTime}ms`,
+                    usedFallback: true,
+                });
+
+            } catch (fallbackError: any) {
+                console.error("[Scrape] All methods failed:", fallbackError);
+
+                // Return demo data to prevent complete failure
+                return NextResponse.json({
+                    success: false,
+                    platform: "Unknown",
+                    title: "Unable to fetch video",
+                    description: "The video could not be fetched. It may be private, restricted, or the platform may be blocking automated access.",
+                    thumbnail: "https://via.placeholder.com/640x360/8B5CF6/FFFFFF?text=Video+Unavailable",
+                    duration: "0:00",
+                    author: "Unknown",
+                    views: "0",
+                    formats: [],
+                    error: scraperError.message,
+                }, { status: 200 }); // Return 200 to avoid breaking the UI
+            }
         }
 
     } catch (error: any) {
-        console.error("API Error:", error);
+        console.error("[Scrape] API Error:", error);
         return NextResponse.json(
             { error: error.message || "Failed to process request" },
             { status: 500 }
@@ -182,24 +119,127 @@ export async function POST(req: NextRequest) {
     }
 }
 
+async function fallbackToExternalService(url: string) {
+    // Try multiple external services in order
+    const services = [
+        {
+            name: 'SuperFast',
+            url: 'https://api.superfastscraper.com/scrape',
+            transform: (data: any) => normalizeResponse(data, 'superfast'),
+        },
+        {
+            name: 'AllInOne',
+            url: 'https://api.allinonedownloader.com/api/download',
+            transform: (data: any) => normalizeResponse(data, 'allinone'),
+        },
+    ];
+
+    for (const service of services) {
+        try {
+            const response = await fetch(service.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                },
+                body: JSON.stringify({ url }),
+                signal: AbortSignal.timeout(8000), // 8s timeout
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return service.transform(data);
+            }
+        } catch (error) {
+            console.warn(`[Fallback] ${service.name} failed:`, error);
+            continue;
+        }
+    }
+
+    throw new Error('All fallback services failed');
+}
+
+function normalizeResponse(data: any, source: string) {
+    const formats = [];
+
+    // Handle different response formats from various APIs
+    if (data.formats && Array.isArray(data.formats)) {
+        for (const format of data.formats) {
+            formats.push({
+                quality: format.quality || format.resolution || format.qualityLabel || 'HD',
+                format: format.ext || format.format || 'mp4',
+                size: format.filesize ? formatFileSize(format.filesize) : 'Unknown',
+                type: (format.vcodec && format.vcodec !== 'none') ? 'video' : 'audio',
+                downloadUrl: format.url || format.download_url || '',
+            });
+        }
+    } else if (data.video_url || data.download_url || data.url) {
+        // Single video URL
+        formats.push({
+            quality: data.quality || 'HD',
+            format: 'mp4',
+            size: data.filesize ? formatFileSize(data.filesize) : 'Unknown',
+            type: 'video',
+            downloadUrl: data.video_url || data.download_url || data.url,
+        });
+    }
+
+    return {
+        platform: detectPlatformFromUrl(data.webpage_url || data.url || ''),
+        title: data.title || 'Video',
+        description: data.description || '',
+        thumbnail: data.thumbnail || data.image || 'https://via.placeholder.com/640x360',
+        duration: formatDuration(data.duration || 0),
+        author: data.uploader || data.author || data.channel || 'Unknown',
+        views: formatViews(data.view_count || data.views || 0),
+        formats: formats.filter(f => f.downloadUrl),
+    };
+}
+
+function detectPlatformFromUrl(url: string): string {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) return 'YouTube';
+    if (url.includes('instagram.com')) return 'Instagram';
+    if (url.includes('tiktok.com')) return 'TikTok';
+    if (url.includes('facebook.com')) return 'Facebook';
+    if (url.includes('twitter.com') || url.includes('x.com')) return 'Twitter';
+    if (url.includes('reddit.com')) return 'Reddit';
+    if (url.includes('pinterest.com')) return 'Pinterest';
+    if (url.includes('linkedin.com')) return 'LinkedIn';
+    return 'Unknown';
+}
+
 function formatViews(views: number | string): string {
     const num = typeof views === 'string' ? parseInt(views) : views;
-    if (num >= 1000000) {
-        return (num / 1000000).toFixed(1) + 'M views';
-    } else if (num >= 1000) {
-        return (num / 1000).toFixed(1) + 'K views';
-    }
-    return num + ' views';
+    if (isNaN(num)) return '0';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
 }
 
 function formatFileSize(bytes: number | string): string {
     const size = typeof bytes === 'string' ? parseInt(bytes) : bytes;
-    if (size >= 1073741824) {
-        return (size / 1073741824).toFixed(2) + ' GB';
-    } else if (size >= 1048576) {
-        return (size / 1048576).toFixed(2) + ' MB';
-    } else if (size >= 1024) {
-        return (size / 1024).toFixed(2) + ' KB';
-    }
+    if (isNaN(size)) return 'Unknown';
+    if (size >= 1073741824) return (size / 1073741824).toFixed(2) + ' GB';
+    if (size >= 1048576) return (size / 1048576).toFixed(2) + ' MB';
+    if (size >= 1024) return (size / 1024).toFixed(2) + ' KB';
     return size + ' bytes';
+}
+
+function formatDuration(seconds: number): string {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return mins > 0 ? `${mins}:${secs.toString().padStart(2, '0')}` : `${secs}s`;
+}
+
+// Handle OPTIONS for CORS
+export async function OPTIONS(req: NextRequest) {
+    return new NextResponse(null, {
+        status: 200,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+        },
+    });
 }

@@ -228,10 +228,38 @@ export default function VideoDownloader() {
             clearTimeout(timeoutId);
             console.warn("Proxy download failed, trying direct fallback:", error);
 
-            // Fallback: try opening in new tab
+            // Fallback: Show a nice toast with a direct link
             if (format.downloadUrl && format.downloadUrl !== '#') {
-                window.open(format.downloadUrl, '_blank');
-                toast.success(`Download started in new tab (Direct Link)`, { id: toastId });
+                toast.custom((t) => (
+                    <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
+                        <div className="flex-1 w-0 p-4">
+                            <div className="flex items-start">
+                                <div className="flex-shrink-0 pt-0.5">
+                                    <ArrowDownTrayIcon className="h-10 w-10 text-primary" />
+                                </div>
+                                <div className="ml-3 flex-1">
+                                    <p className="text-sm font-medium text-foreground">
+                                        Automatic Download Failed
+                                    </p>
+                                    <p className="mt-1 text-sm text-muted-foreground">
+                                        The proxy server timed out. Click below to download directly from the source.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex border-l border-border">
+                            <button
+                                onClick={() => {
+                                    window.open(format.downloadUrl, '_blank');
+                                    toast.dismiss(t.id);
+                                }}
+                                className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-bold text-primary hover:text-primary/80 focus:outline-none"
+                            >
+                                Download Direct
+                            </button>
+                        </div>
+                    </div>
+                ), { duration: Infinity, id: toastId });
             } else {
                 toast.error(`Download failed: ${error.message}`, { id: toastId });
             }
