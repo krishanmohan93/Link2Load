@@ -166,29 +166,35 @@ export default function VideoDownloader() {
         const toastId = toast.loading(`Preparing download: ${format.quality} ${format.format}...`);
 
         try {
-            // Fetch the video file
-            const response = await fetch(format.downloadUrl, {
-                method: 'GET',
+            // Generate filename
+            const filename = `${videoInfo?.title.substring(0, 50).replace(/[^a-z0-9]/gi, '_') || 'video'}_${format.quality.replace(/[^a-z0-9]/gi, '_')}.${format.format.toLowerCase()}`;
+
+            // Use proxy API to avoid CORS issues
+            const response = await fetch('/api/download-file', {
+                method: 'POST',
                 headers: {
-                    'Accept': '*/*',
-                }
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url: format.downloadUrl,
+                    filename: filename,
+                    quality: format.quality
+                }),
             });
 
             if (!response.ok) {
-                throw new Error(`Failed to download: ${response.statusText}`);
+                const errorData = await response.json().catch(() => ({ error: 'Download failed' }));
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
             }
 
-            // Get the blob
+            // Get the blob from response
             const blob = await response.blob();
 
-            // Create a download link
+            // Create download link
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-
-            // Generate filename
-            const filename = `${videoInfo?.title.substring(0, 50).replace(/[^a-z0-9]/gi, '_') || 'video'}_${format.quality.replace(/[^a-z0-9]/gi, '_')}.${format.format.toLowerCase()}`;
             a.download = filename;
 
             // Trigger download
@@ -196,8 +202,10 @@ export default function VideoDownloader() {
             a.click();
 
             // Cleanup
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+            setTimeout(() => {
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }, 100);
 
             toast.success(`Download started: ${format.quality} ${format.format}`, { id: toastId });
 
@@ -205,10 +213,14 @@ export default function VideoDownloader() {
             console.error("Download error:", error);
 
             // Fallback: try opening in new tab
-            try {
-                window.open(format.downloadUrl, '_blank');
-                toast.success(`Opening download in new tab...`, { id: toastId });
-            } catch (fallbackError) {
+            if (format.downloadUrl && format.downloadUrl !== '#') {
+                try {
+                    window.open(format.downloadUrl, '_blank');
+                    toast.success(`Opening download in new tab...`, { id: toastId });
+                } catch (fallbackError) {
+                    toast.error(`Download failed: ${error.message}`, { id: toastId });
+                }
+            } else {
                 toast.error(`Download failed: ${error.message}`, { id: toastId });
             }
         }
