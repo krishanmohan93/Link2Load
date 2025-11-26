@@ -1,0 +1,132 @@
+
+> video-downloader@0.1.0 dev
+> next dev
+
+ ΓÜá `images.domains` is deprecated in favor of `images.remotePatterns`. Please update next.config.ts to protect your application from malicious users.
+   Γû▓ Next.js 16.0.4 (Turbopack)
+   - Local:         http://localhost:3000
+   - Network:       http://10.211.85.75:3000
+
+ Γ£ô Starting...
+ Γ£ô Ready in 1368ms
+Error: Cannot apply unknown utility class `bg-white/10`
+    [at onInvalidCandidate (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:21:1511)]
+    [at Te (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:16:36364)]
+    [at D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:21:355]
+    [at Tr (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:3:1718)]
+    [at _ (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:3:1377)]
+    [at Se (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:21:172)]
+    [at ln (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:38:294)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:105:5)]
+    [at async sn (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:38:631)]
+    [at async Qr (D:\Vibe Coding\Antigravity\video-downloader\node_modules\@tailwindcss\node\dist\index.js:10:3385)]
+ Γ¿» ./app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: D:\Vibe Coding\Antigravity\video-downloader\app\globals.css:1:1: Cannot apply unknown utility class `bg-white/10`
+    [at Input.error (turbopack:///[project]/node_modules/postcss/lib/input.js:135:16)]
+    [at Root.error (turbopack:///[project]/node_modules/postcss/lib/node.js:146:32)]
+    [at Object.Once (D:\Vibe Coding\Antigravity\video-downloader\node_modules\@tailwindcss\postcss\dist\index.js:10:6912)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:105:5)]
+    [at async LazyResult.runAsync (turbopack:///[project]/node_modules/postcss/lib/lazy-result.js:293:11)]
+    [at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34)]
+    [at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23)]
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 3.7s (compile: 3.4s, render: 229ms)
+ Γ¿» ./app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: D:\Vibe Coding\Antigravity\video-downloader\app\globals.css:1:1: Cannot apply unknown utility class `bg-white/10`
+    [at Input.error (turbopack:///[project]/node_modules/postcss/lib/input.js:135:16)]
+    [at Root.error (turbopack:///[project]/node_modules/postcss/lib/node.js:146:32)]
+    [at Object.Once (D:\Vibe Coding\Antigravity\video-downloader\node_modules\@tailwindcss\postcss\dist\index.js:10:6912)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:105:5)]
+    [at async LazyResult.runAsync (turbopack:///[project]/node_modules/postcss/lib/lazy-result.js:293:11)]
+    [at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34)]
+    [at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23)]
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 354ms (compile: 229ms, render: 125ms)
+ ΓÜá Found a change in next.config.ts. Restarting the server to apply the changes...
+ ΓÜá `images.domains` is deprecated in favor of `images.remotePatterns`. Please update next.config.ts to protect your application from malicious users.
+   Γû▓ Next.js 16.0.4 (Turbopack)
+   - Local:         http://localhost:3000
+   - Network:       http://10.211.85.75:3000
+
+ Γ£ô Starting...
+ Γ£ô Ready in 1701ms
+Error: Cannot apply unknown utility class `bg-white/10`
+    [at onInvalidCandidate (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:21:1511)]
+    [at Te (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:16:36364)]
+    [at D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:21:355]
+    [at Tr (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:3:1718)]
+    [at _ (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:3:1377)]
+    [at Se (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:21:172)]
+    [at ln (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:38:294)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:105:5)]
+    [at async sn (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:38:631)]
+    [at async Qr (D:\Vibe Coding\Antigravity\video-downloader\node_modules\@tailwindcss\node\dist\index.js:10:3385)]
+ Γ¿» ./app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: D:\Vibe Coding\Antigravity\video-downloader\app\globals.css:1:1: Cannot apply unknown utility class `bg-white/10`
+    [at Input.error (turbopack:///[project]/node_modules/postcss/lib/input.js:135:16)]
+    [at Root.error (turbopack:///[project]/node_modules/postcss/lib/node.js:146:32)]
+    [at Object.Once (D:\Vibe Coding\Antigravity\video-downloader\node_modules\@tailwindcss\postcss\dist\index.js:10:6912)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:105:5)]
+    [at async LazyResult.runAsync (turbopack:///[project]/node_modules/postcss/lib/lazy-result.js:293:11)]
+    [at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34)]
+    [at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23)]
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 3.9s (compile: 3.7s, render: 195ms)
+ Γ¿» ./app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: D:\Vibe Coding\Antigravity\video-downloader\app\globals.css:1:1: Cannot apply unknown utility class `bg-white/10`
+    [at Input.error (turbopack:///[project]/node_modules/postcss/lib/input.js:135:16)]
+    [at Root.error (turbopack:///[project]/node_modules/postcss/lib/node.js:146:32)]
+    [at Object.Once (D:\Vibe Coding\Antigravity\video-downloader\node_modules\@tailwindcss\postcss\dist\index.js:10:6912)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:105:5)]
+    [at async LazyResult.runAsync (turbopack:///[project]/node_modules/postcss/lib/lazy-result.js:293:11)]
+    [at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34)]
+    [at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23)]
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 47ms (compile: 35ms, render: 12ms)
+ Γ¿» ./app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: D:\Vibe Coding\Antigravity\video-downloader\app\globals.css:1:1: Cannot apply unknown utility class `bg-white/10`
+    [at Input.error (turbopack:///[project]/node_modules/postcss/lib/input.js:135:16)]
+    [at Root.error (turbopack:///[project]/node_modules/postcss/lib/node.js:146:32)]
+    [at Object.Once (D:\Vibe Coding\Antigravity\video-downloader\node_modules\@tailwindcss\postcss\dist\index.js:10:6912)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:105:5)]
+    [at async LazyResult.runAsync (turbopack:///[project]/node_modules/postcss/lib/lazy-result.js:293:11)]
+    [at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34)]
+    [at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23)]
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 218ms (compile: 117ms, render: 101ms)
+npm error A complete log of this run can be found in: C:\Users\krish\AppData\Local\npm-cache\_logs\2025-11-25T16_07_05_391Z-debug-0.log

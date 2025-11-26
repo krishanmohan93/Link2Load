@@ -1,0 +1,52 @@
+
+> video-downloader@0.1.0 dev
+> next dev
+
+ ΓÜá `images.domains` is deprecated in favor of `images.remotePatterns`. Please update next.config.ts to protect your application from malicious users.
+   Γû▓ Next.js 16.0.4 (Turbopack)
+   - Local:         http://localhost:3000
+   - Network:       http://10.211.85.75:3000
+
+ Γ£ô Starting...
+ Γ£ô Ready in 1083ms
+Error: Cannot apply unknown utility class `bg-white/10`
+    [at onInvalidCandidate (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:21:1511)]
+    [at Te (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:16:36364)]
+    [at D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:21:355]
+    [at Tr (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:3:1718)]
+    [at _ (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:3:1377)]
+    [at Se (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:21:172)]
+    [at ln (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:38:294)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:105:5)]
+    [at async sn (D:\Vibe Coding\Antigravity\video-downloader\node_modules\tailwindcss\dist\lib.js:38:631)]
+    [at async Qr (D:\Vibe Coding\Antigravity\video-downloader\node_modules\@tailwindcss\node\dist\index.js:10:3385)]
+ Γ¿» ./app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: D:\Vibe Coding\Antigravity\video-downloader\app\globals.css:1:1: Cannot apply unknown utility class `bg-white/10`
+    [at Input.error (turbopack:///[project]/node_modules/postcss/lib/input.js:135:16)]
+    [at Root.error (turbopack:///[project]/node_modules/postcss/lib/node.js:146:32)]
+    [at Object.Once (D:\Vibe Coding\Antigravity\video-downloader\node_modules\@tailwindcss\postcss\dist\index.js:10:6912)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:105:5)]
+    [at async LazyResult.runAsync (turbopack:///[project]/node_modules/postcss/lib/lazy-result.js:293:11)]
+    [at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34)]
+    [at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23)]
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 3.9s (compile: 3.7s, render: 197ms)
+ Γ£ô Compiled in 629ms
+D:\Vibe Coding\Antigravity\video-downloader\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+ Γ¿» Error: Event handlers cannot be passed to Client Component props.
+  <button onClick={function onClick} className=... children=...>
+                  ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '203643256'
+}
+ ΓÜá metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+ GET / 500 in 586ms (compile: 230ms, render: 357ms)
