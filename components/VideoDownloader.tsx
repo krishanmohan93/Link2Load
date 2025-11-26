@@ -174,10 +174,14 @@ export default function VideoDownloader() {
 
         const toastId = toast.loading(`Preparing download: ${format.quality} ${format.format}...`);
 
-        try {
-            // Generate filename
-            const filename = `${videoInfo?.title.substring(0, 50).replace(/[^a-z0-9]/gi, '_') || 'video'}_${format.quality.replace(/[^a-z0-9]/gi, '_')}.${format.format.toLowerCase()}`;
+        // Generate filename
+        const filename = `${videoInfo?.title.substring(0, 50).replace(/[^a-z0-9]/gi, '_') || 'video'}_${format.quality.replace(/[^a-z0-9]/gi, '_')}.${format.format.toLowerCase()}`;
 
+        // Set a timeout of 8 seconds to prevent hanging on Vercel
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        try {
             // Use proxy API to avoid CORS issues
             const response = await fetch('/api/download-file', {
                 method: 'POST',
@@ -189,11 +193,13 @@ export default function VideoDownloader() {
                     filename: filename,
                     quality: format.quality
                 }),
+                signal: controller.signal
             });
 
+            clearTimeout(timeoutId);
+
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: 'Download failed' }));
-                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                throw new Error(`Server error: ${response.status}`);
             }
 
             // Get the blob from response
@@ -219,16 +225,13 @@ export default function VideoDownloader() {
             toast.success(`Download started: ${format.quality} ${format.format}`, { id: toastId });
 
         } catch (error: any) {
-            console.error("Download error:", error);
+            clearTimeout(timeoutId);
+            console.warn("Proxy download failed, trying direct fallback:", error);
 
             // Fallback: try opening in new tab
             if (format.downloadUrl && format.downloadUrl !== '#') {
-                try {
-                    window.open(format.downloadUrl, '_blank');
-                    toast.success(`Opening download in new tab...`, { id: toastId });
-                } catch (fallbackError) {
-                    toast.error(`Download failed: ${error.message}`, { id: toastId });
-                }
+                window.open(format.downloadUrl, '_blank');
+                toast.success(`Download started in new tab (Direct Link)`, { id: toastId });
             } else {
                 toast.error(`Download failed: ${error.message}`, { id: toastId });
             }
