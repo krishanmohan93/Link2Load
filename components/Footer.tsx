@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
     ArrowDownTrayIcon,
@@ -8,7 +9,11 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function Footer() {
-    const currentYear = new Date().getFullYear();
+    const [currentYear, setCurrentYear] = useState(2025);
+
+    useEffect(() => {
+        setCurrentYear(new Date().getFullYear());
+    }, []);
 
     const platformLinks = [
         { name: "YouTube Downloader", href: "/youtube-downloader" },

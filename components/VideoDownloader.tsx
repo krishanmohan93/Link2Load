@@ -59,6 +59,15 @@ export default function VideoDownloader() {
         };
 
         checkClipboard();
+
+        // Check if running via file protocol
+        if (typeof window !== 'undefined' && window.location.protocol === 'file:') {
+            toast.error("You are running this app via file:// protocol. Features will NOT work. Please use 'npm run dev' and open http://localhost:3000", {
+                duration: 10000,
+                icon: '⚠️'
+            });
+            setError("App is running in file mode. Please use a web server (npm run dev).");
+        }
     }, []);
 
     const isValidUrl = (string: string) => {
