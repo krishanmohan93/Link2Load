@@ -3,6 +3,12 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
     title: "DMCA Policy - Video Downloader Pro",
     description: "Read our DMCA Policy to understand how we handle copyright infringement claims at Video Downloader Pro.",
+    openGraph: {
+        title: "DMCA Policy - Video Downloader Pro",
+        description: "Copyright infringement reporting procedure.",
+        url: "https://videodownloaderpro.com/dmca",
+        type: "website",
+    },
 };
 
 export default function DmcaPage() {
@@ -13,10 +19,10 @@ export default function DmcaPage() {
                     DMCA Policy
                 </h1>
 
-                <div className="prose prose-lg dark:prose-invert mx-auto bg-card p-8 rounded-2xl border border-border shadow-sm">
+                <div className="prose prose-lg dark:prose-invert mx-auto bg-card p-8 md:p-12 rounded-3xl border border-border shadow-sm">
                     <p className="text-sm text-muted-foreground mb-8">Last Updated: November 30, 2025</p>
 
-                    <p>
+                    <p className="lead text-xl text-muted-foreground mb-8">
                         Video Downloader Pro respects the intellectual property rights of others and expects its users to do the same. In accordance with the Digital Millennium Copyright Act of 1998, the text of which may be found on the U.S. Copyright Office website at <a href="http://www.copyright.gov/legislation/dmca.pdf" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">http://www.copyright.gov/legislation/dmca.pdf</a>, Video Downloader Pro will respond expeditiously to claims of copyright infringement committed using the Video Downloader Pro service and/or the Video Downloader Pro website (the "Site") if such claims are reported to Video Downloader Pro's Designated Copyright Agent identified in the sample notice below.
                     </p>
 
@@ -34,7 +40,7 @@ export default function DmcaPage() {
                         <li>Identify the material or link you claim is infringing (or the subject of infringing activity) and that access to which is to be disabled, including at a minimum, if applicable, the URL of the link shown on the Site where such material may be found.</li>
                         <li>Provide your mailing address, telephone number, and, if available, email address.</li>
                         <li>Include both of the following statements in the body of the Notice:
-                            <ul className="list-circle pl-6 mt-2">
+                            <ul className="list-disc pl-6 mt-2">
                                 <li>"I hereby state that I have a good faith belief that the disputed use of the copyrighted material is not authorized by the copyright owner, its agent, or the law (e.g., as a fair use)."</li>
                                 <li>"I hereby state that the information in this Notice is accurate and, under penalty of perjury, that I am the owner, or authorized to act on behalf of the owner, of the copyright or of an exclusive right under the copyright that is allegedly infringed."</li>
                             </ul>
@@ -57,12 +63,12 @@ export default function DmcaPage() {
                     <p>
                         All DMCA Notices and Counter-Notices should be sent to our Designated Copyright Agent at the following address:
                     </p>
-                    <div className="bg-muted p-4 rounded-lg mt-4">
+                    <div className="bg-muted p-6 rounded-xl border border-border mt-4">
                         <p className="font-mono text-sm">
                             Video Downloader Pro<br />
                             Attn: Copyright Agent<br />
-                            123 Tech Plaza, Suite 456<br />
-                            San Francisco, CA 94107<br />
+                            100 Smith Street<br />
+                            Collingwood VIC 3066 AU<br />
                             Email: dmca@videodownloaderpro.com
                         </p>
                     </div>

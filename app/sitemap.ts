@@ -19,10 +19,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/blog/youtube-to-mp3-converter',
         '/about',
         '/contact',
-        '/privacy',
-        '/terms',
+        '/privacy-policy',
+        '/terms-and-conditions',
         '/disclaimer',
         '/dmca',
+        '/cookies',
         '/api-docs',
     ].map((route) => ({
         url: `${baseUrl}${route}`,

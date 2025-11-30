@@ -27,6 +27,7 @@ export default function Header() {
         { name: "TikTok Downloader", href: "/tiktok-downloader" },
         { name: "Blog", href: "/blog" },
         { name: "About", href: "/about" },
+        { name: "Contact", href: "/contact" },
         { name: "API", href: "/api-docs" },
     ];
 

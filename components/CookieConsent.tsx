@@ -35,7 +35,7 @@ export default function CookieConsent() {
                             <p className="text-sm text-muted-foreground">
                                 We use cookies to enhance your browsing experience, serve personalized ads or content,
                                 and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.
-                                Read our <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a> and{' '}
+                                Read our <a href="/privacy-policy" className="text-primary hover:underline">Privacy Policy</a> and{' '}
                                 <a href="/cookies" className="text-primary hover:underline">Cookie Policy</a> for more information.
                             </p>
                         </div>

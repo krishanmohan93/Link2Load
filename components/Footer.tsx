@@ -38,8 +38,8 @@ export default function Footer() {
     const legalLinks = [
         { name: "About Us", href: "/about" },
         { name: "Contact Us", href: "/contact" },
-        { name: "Privacy Policy", href: "/privacy" },
-        { name: "Terms of Service", href: "/terms" },
+        { name: "Privacy Policy", href: "/privacy-policy" },
+        { name: "Terms of Service", href: "/terms-and-conditions" },
         { name: "Disclaimer", href: "/disclaimer" },
         { name: "DMCA", href: "/dmca" },
         { name: "Cookie Policy", href: "/cookies" },
