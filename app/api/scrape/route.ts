@@ -59,14 +59,14 @@ export async function POST(req: NextRequest) {
 
         console.log(`[Scrape] Processing: ${url}`);
 
-        // Use unified scraper with automatic fallback
+        // Use UnifiedScraper (proven to work with ytdl-core, etc.)
         const scraper = new UnifiedScraper();
 
         try {
             const result = await scraper.scrape(url);
 
             const processingTime = Date.now() - startTime;
-            console.log(`[Scrape] Success in ${processingTime}ms`);
+            console.log(`[Scrape] Fallback scraper success in ${processingTime}ms`);
 
             return NextResponse.json({
                 ...result,

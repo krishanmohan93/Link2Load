@@ -114,13 +114,20 @@ export default function VideoDownloader() {
         setVideoInfo(null);
 
         try {
+            // Create abort controller with 120-second timeout (allow time for yt-dlp binary download)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 seconds
+
             const response = await fetch('/api/scrape', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ url }),
+                signal: controller.signal,
             });
+
+            clearTimeout(timeoutId);
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -157,13 +164,20 @@ export default function VideoDownloader() {
     };
 
     const saveToHistory = (info: VideoInfo) => {
-        const history = JSON.parse(localStorage.getItem('downloadHistory') || '[]');
-        history.unshift({
-            ...info,
-            timestamp: new Date().toISOString(),
-            url: url
-        });
-        localStorage.setItem('downloadHistory', JSON.stringify(history.slice(0, 50)));
+        // Only access localStorage on client side
+        if (typeof window === 'undefined') return;
+
+        try {
+            const history = JSON.parse(localStorage.getItem('downloadHistory') || '[]');
+            history.unshift({
+                ...info,
+                timestamp: new Date().toISOString(),
+                url: url
+            });
+            localStorage.setItem('downloadHistory', JSON.stringify(history.slice(0, 50)));
+        } catch (error) {
+            console.error('Failed to save to history:', error);
+        }
     };
 
     const handleDownload = async (format: VideoFormat) => {
@@ -177,21 +191,23 @@ export default function VideoDownloader() {
         // Generate filename
         const filename = `${videoInfo?.title.substring(0, 50).replace(/[^a-z0-9]/gi, '_') || 'video'}_${format.quality.replace(/[^a-z0-9]/gi, '_')}.${format.format.toLowerCase()}`;
 
-        // Set a timeout of 8 seconds to prevent hanging on Vercel
+        // Set a timeout of 5 minutes for larger files
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const timeoutId = setTimeout(() => controller.abort(), 300000);
 
         try {
-            // Use proxy API to avoid CORS issues
-            const response = await fetch('/api/download-file', {
+            // Use the new /api/download endpoint with direct file URL
+            const response = await fetch('/api/download', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    url: format.downloadUrl,
-                    filename: filename,
-                    quality: format.quality
+                    url: url, // Original video URL
+                    quality: format.quality,
+                    fileUrl: format.downloadUrl, // Direct download URL
+                    title: videoInfo?.title,
+                    format: format.format
                 }),
                 signal: controller.signal
             });
@@ -199,17 +215,18 @@ export default function VideoDownloader() {
             clearTimeout(timeoutId);
 
             if (!response.ok) {
-                throw new Error(`Server error: ${response.status}`);
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                throw new Error(errorData.error || `Server error: ${response.status}`);
             }
 
             // Get the blob from response
             const blob = await response.blob();
 
-            // Create download link
-            const url = window.URL.createObjectURL(blob);
+            // Create download link and trigger download
+            const downloadUrl = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
-            a.href = url;
+            a.href = downloadUrl;
             a.download = filename;
 
             // Trigger download
@@ -218,7 +235,7 @@ export default function VideoDownloader() {
 
             // Cleanup
             setTimeout(() => {
-                window.URL.revokeObjectURL(url);
+                window.URL.revokeObjectURL(downloadUrl);
                 document.body.removeChild(a);
             }, 100);
 
@@ -226,9 +243,9 @@ export default function VideoDownloader() {
 
         } catch (error: any) {
             clearTimeout(timeoutId);
-            console.warn("Proxy download failed, trying direct fallback:", error);
+            console.error("Download failed:", error);
 
-            // Fallback: Show a nice toast with a direct link
+            // Fallback: Try direct download as last resort
             if (format.downloadUrl && format.downloadUrl !== '#') {
                 toast.custom((t) => (
                     <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
@@ -239,10 +256,10 @@ export default function VideoDownloader() {
                                 </div>
                                 <div className="ml-3 flex-1">
                                     <p className="text-sm font-medium text-foreground">
-                                        Automatic Download Failed
+                                        Server Download Failed
                                     </p>
                                     <p className="mt-1 text-sm text-muted-foreground">
-                                        The proxy server timed out. Click below to download directly from the source.
+                                        {error.message}. Click below to try downloading directly from the source.
                                     </p>
                                 </div>
                             </div>
@@ -250,12 +267,21 @@ export default function VideoDownloader() {
                         <div className="flex border-l border-border">
                             <button
                                 onClick={() => {
-                                    window.open(format.downloadUrl, '_blank');
+                                    // Try direct download without new tab
+                                    const a = document.createElement('a');
+                                    a.href = format.downloadUrl;
+                                    a.download = filename;
+                                    a.target = '_blank';
+                                    a.rel = 'noopener noreferrer';
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
                                     toast.dismiss(t.id);
+                                    toast.success('Direct download initiated');
                                 }}
                                 className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-bold text-primary hover:text-primary/80 focus:outline-none"
                             >
-                                Download Direct
+                                Try Direct
                             </button>
                         </div>
                     </div>

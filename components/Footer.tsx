@@ -8,6 +8,8 @@ import {
     HeartIcon
 } from "@heroicons/react/24/outline";
 
+import AdBanner from "./AdBanner";
+
 export default function Footer() {
     const [currentYear, setCurrentYear] = useState(2025);
 
@@ -34,14 +36,20 @@ export default function Footer() {
     ];
 
     const legalLinks = [
+        { name: "About Us", href: "/about" },
+        { name: "Contact Us", href: "/contact" },
         { name: "Privacy Policy", href: "/privacy" },
         { name: "Terms of Service", href: "/terms" },
+        { name: "Disclaimer", href: "/disclaimer" },
         { name: "DMCA", href: "/dmca" },
         { name: "Cookie Policy", href: "/cookies" },
     ];
 
     return (
         <footer className="bg-secondary/30 border-t border-border no-print">
+            <div className="container-custom py-8">
+                <AdBanner slot="footer-slot-placeholder" className="mb-8" />
+            </div>
             <div className="container-custom py-12 md:py-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                     {/* Brand Column */}

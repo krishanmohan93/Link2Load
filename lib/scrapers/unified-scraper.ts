@@ -3,11 +3,16 @@ import { YouTubeScraper } from './youtube-scraper';
 import { TikTokScraper } from './tiktok-scraper';
 import { InstagramScraper } from './instagram-scraper';
 
+// Interface for scrapers
+interface IScraper {
+    scrape(url: string): Promise<ScraperResult>;
+}
+
 export class UnifiedScraper {
-    private scrapers: Map<string, any>;
+    private scrapers: Map<string, IScraper>;
 
     constructor() {
-        this.scrapers = new Map([
+        this.scrapers = new Map<string, IScraper>([
             ['youtube', new YouTubeScraper()],
             ['tiktok', new TikTokScraper()],
             ['instagram', new InstagramScraper()],

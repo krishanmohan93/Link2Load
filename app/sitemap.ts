@@ -17,6 +17,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/blog/instagram-reel-downloader-guide',
         '/blog/twitter-video-downloader-online',
         '/blog/youtube-to-mp3-converter',
+        '/about',
+        '/contact',
+        '/privacy',
+        '/terms',
+        '/disclaimer',
+        '/dmca',
         '/api-docs',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
